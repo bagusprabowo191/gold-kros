@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gold Kros - Toko Emas</title>
+    <style>
+      :root {
+        --primary: #f5d142;
+        --dark-bg: #1a1a1a;
+        --light-bg: #fff;
+        --dark-text: #f1f1f1;
+        --light-text: #000;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        margin: 0;
+        padding: 0;
+        background: var(--light-bg);
+        color: var(--light-text);
+        transition: all 0.3s ease;
+      }
+
+      header {
+        background-color: var(--primary);
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 0.5rem 1rem;
+      }
+
+      nav a {
+        text-decoration: none;
+        font-weight: bold;
+        color: var(--light-text);
+      }
+
+      .menu-toggle {
+        font-size: 1.5rem;
+        display: none;
+        cursor: pointer;
+      }
+
+      section {
+        padding: 1.5rem;
+        animation: fadeIn 0.8s ease-in;
+      }
+
+      .produk-item {
+        border: 1px solid #ccc;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+        background: #fafafa;
+      }
+
+      .produk-item:hover {
+        transform: scale(1.03);
+      }
+
+      input,
+      select,
+      textarea,
+      button {
+        width: 100%;
+        padding: 0.7rem;
+        margin: 0.3rem 0 1rem;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+
+      button {
+        background-color: var(--primary);
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #e0c10a;
+      }
+
+      .dark-mode {
+        background: var(--dark-bg);
+        color: var(--dark-text);
+      }
+
+      .dark-mode header {
+        background: #333;
+        color: var(--dark-text);
+      }
+
+      .dark-mode nav a {
+        color: var(--dark-text);
+      }
+
+      .keranjang {
+        background-color: #f0f0f0;
+        padding: 1rem;
+        border-radius: 10px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      footer {
+        background: #222;
+        color: #fff;
+        text-align: center;
+        padding: 1rem;
+        margin-top: 2rem;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 768px) {
+        nav {
+          flex-direction: column;
+          display: none;
+        }
+        nav.show {
+          display: flex;
+        }
+        .menu-toggle {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section id="login-page">
+      <h2>Masuk ke Gold Kros</h2>
+      <input type="text" id="login-nama" placeholder="Nama" />
+      <input type="email" id="login-email" placeholder="Email" />
+      <button onclick="login()">Masuk</button>
+      <p style="text-align: center">atau</p>
+      <button onclick="masukGratis()">Masuk Gratis</button>
+    </section>
+
+    <div id="main-content" class="hidden">
+      <header>
+        <h1>Gold Kros</h1>
+        <div>
+          <button onclick="toggleMode()">🌙 / ☀️</button>
+          <button onclick="logout()">Logout</button>
+          <span class="menu-toggle" onclick="toggleMenu()">☰</span>
+        </div>
+      </header>
+
+      <nav id="nav-menu">
+        <a href="#produk">Produk</a>
+        <a href="#pesanan">Pemesanan</a>
+        <a href="#testimoni">Testimoni</a>
+        <a href="#tim">Tentang Tim</a>
+      </nav>
+
+      <main>
+        <section id="produk">
+          <h2>Daftar Produk Emas</h2>
+          <input
+            type="text"
+            id="search"
+            placeholder="Cari produk..."
+            onkeyup="cariProduk()"
+          />
+          <select id="filter" onchange="filterProduk()">
+            <option value="">Semua Kategori</option>
+            <option value="cincin">Cincin</option>
+            <option value="kalung">Kalung</option>
+            <option value="gelang">Gelang</option>
+          </select>
+          <div id="daftar-produk"></div>
+        </section>
+
+        <section class="keranjang" id="keranjang">
+          <h2>Keranjang Belanja</h2>
+          <ul id="keranjang-list"></ul>
+          <strong>Total: Rp <span id="total">0</span></strong>
+        </section>
+
+        <section id="pesanan">
+          <h2>Form Pemesanan</h2>
+          <input type="text" placeholder="Nama Anda" />
+          <input type="text" placeholder="Alamat" />
+          <input type="tel" placeholder="Nomor HP" />
+          <button onclick="kirimPesanan()">Kirim Pesanan</button>
+        </section>
+
+        <section id="testimoni">
+          <h2>Testimoni Pelanggan</h2>
+          <input type="text" id="nama-testi" placeholder="Nama" />
+          <textarea id="pesan-testi" placeholder="Komentar"></textarea>
+          <select id="rating-testi">
+            <option value="⭐">⭐</option>
+            <option value="⭐⭐">⭐⭐</option>
+            <option value="⭐⭐⭐">⭐⭐⭐</option>
+            <option value="⭐⭐⭐⭐">⭐⭐⭐⭐</option>
+            <option value="⭐⭐⭐⭐⭐" selected>⭐⭐⭐⭐⭐</option>
+          </select>
+          <button onclick="tambahTestimoni()">Kirim</button>
+          <ul id="daftar-testimoni"></ul>
+        </section>
+
+        <section id="tim">
+          <h2>Tim Kami</h2>
+          <p><strong>Bos:</strong> Bagus Prabowo</p>
+          <p><strong>Manager:</strong> Shandy Syahputra</p>
+          <p><strong>Administrasi:</strong> Nadya Salsabilla & Atika Azizah</p>
+        </section>
+      </main>
+
+      <footer>&copy; 2025 Gold Kros - All Rights Reserved.</footer>
+    </div>
+
+    <script>
+      const daftarProduk = [
+        {
+          nama: "Cincin Emas 24K",
+          harga: 1500000,
+          kategori: "cincin",
+          manfaat: "Cocok untuk tunangan.",
+        },
+        {
+          nama: "Kalung Emas Murni",
+          harga: 2500000,
+          kategori: "kalung",
+          manfaat: "Menambah keanggunan.",
+        },
+        {
+          nama: "Gelang Emas 22K",
+          harga: 1800000,
+          kategori: "gelang",
+          manfaat: "Untuk hadiah istimewa.",
+        },
+        {
+          nama: "Cincin Berlian Mini",
+          harga: 2200000,
+          kategori: "cincin",
+          manfaat: "Elegan dan mewah.",
+        },
+        {
+          nama: "Kalung Emas Putih",
+          harga: 2700000,
+          kategori: "kalung",
+          manfaat: "Modern dan menawan.",
+        },
+      ];
+
+      const keranjang = JSON.parse(localStorage.getItem("keranjang")) || [];
+
+      function renderProduk(data) {
+        const list = document.getElementById("daftar-produk");
+        list.innerHTML = "";
+        data.forEach((p, i) => {
+          list.innerHTML += `
+          <div class="produk-item">
+            <h3>${p.nama}</h3>
+            <p>Harga: Rp ${p.harga.toLocaleString()}</p>
+            <p>Manfaat: ${p.manfaat}</p>
+            <button onclick="tambahKeranjang(${i})">Beli</button>
+          </div>`;
+        });
+      }
+
+      function tambahKeranjang(index) {
+        keranjang.push(daftarProduk[index]);
+        localStorage.setItem("keranjang", JSON.stringify(keranjang));
+        renderKeranjang();
+        document
+          .getElementById("pesanan")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      function renderKeranjang() {
+        const list = document.getElementById("keranjang-list");
+        const totalEl = document.getElementById("total");
+        list.innerHTML = "";
+        let total = 0;
+        keranjang.forEach((p) => {
+          list.innerHTML += `<li>${
+            p.nama
+          } - Rp ${p.harga.toLocaleString()}</li>`;
+          total += p.harga;
+        });
+        totalEl.innerText = total.toLocaleString();
+      }
+
+      function kirimPesanan() {
+        alert("Pesanan berhasil dikirim!");
+        document
+          .getElementById("testimoni")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      function tambahTestimoni() {
+        const nama = document.getElementById("nama-testi").value;
+        const pesan = document.getElementById("pesan-testi").value;
+        const rating = document.getElementById("rating-testi").value;
+        if (nama && pesan) {
+          document.getElementById("daftar-testimoni").innerHTML += `
+          <li><strong>${nama}:</strong> ${pesan}<br>Rating: ${rating}</li>`;
+          document.getElementById("nama-testi").value = "";
+          document.getElementById("pesan-testi").value = "";
+          document.getElementById("rating-testi").value = "⭐⭐⭐⭐⭐";
+        }
+      }
+
+      function login() {
+        const nama = document.getElementById("login-nama").value;
+        const email = document.getElementById("login-email").value;
+        if (nama && email) {
+          localStorage.setItem("user", nama);
+          showMainContent();
+        } else {
+          alert("Nama dan email wajib diisi");
+        }
+      }
+
+      function masukGratis() {
+        localStorage.setItem("user", "Pengunjung");
+        showMainContent();
+      }
+
+      function logout() {
+        localStorage.clear();
+        location.reload();
+      }
+
+      function toggleMode() {
+        document.body.classList.toggle("dark-mode");
+      }
+
+      function toggleMenu() {
+        document.getElementById("nav-menu").classList.toggle("show");
+      }
+
+      function cariProduk() {
+        const keyword = document.getElementById("search").value.toLowerCase();
+        const hasil = daftarProduk.filter((p) =>
+          p.nama.toLowerCase().includes(keyword)
+        );
+        renderProduk(hasil);
+      }
+
+      function filterProduk() {
+        const kategori = document.getElementById("filter").value;
+        const hasil = kategori
+          ? daftarProduk.filter((p) => p.kategori === kategori)
+          : daftarProduk;
+        renderProduk(hasil);
+      }
+
+      function showMainContent() {
+        document.getElementById("login-page").classList.add("hidden");
+        document.getElementById("main-content").classList.remove("hidden");
+        renderProduk(daftarProduk);
+        renderKeranjang();
+      }
+
+      // Auto-login jika user tersimpan
+      if (localStorage.getItem("user")) {
+        showMainContent();
+      }
+    </script>
+  </body>
+</html>
